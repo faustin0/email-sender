@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 @Component
 public class EmailSenderImpl implements EmailSender {
 
-    private final static Logger log = LoggerFactory.getLogger(EmailSenderImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(EmailSenderImpl.class);
 
     private final JavaMailSender mailSender;
 
