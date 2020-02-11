@@ -7,17 +7,21 @@
 </head>
 
 <body>
-<form action="#" th:action="@{/sendMail}" method="post">
+<form action="#" th:action="@{/sendEmail}" th:object="${emailDTO}" method="post">
     <label for="from">From</label>
-    <input type="text" id="from" placeholder="From">
+    <input type="text" id="from" placeholder="From" th:field="*{from}">
 
     <label for="to">To</label>
-    <input type="text" id="to" placeholder="To">
+    <input type="text" id="to" placeholder="To" th:field="*{to}">
 
     <label for="body">Body</label>
-    <input type="text" id="body" placeholder="email body">
+    <input type="text" id="body" placeholder="email body" th:field="*{body}">
+
+    <label for="subject">Subject</label>
+    <input type="text" id="subject" placeholder="email subject" th:field="*{subject}">
 
     <input type="submit" value="Send Email">
+    <input type="reset" value="Reset"/>
 </form>
 <a href="emails">Show Emails</a>
 </body>

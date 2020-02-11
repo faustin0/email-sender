@@ -52,12 +52,12 @@ public class Email {
         }
 
         public Builder to(String to) {
-            toBuild.to = requireNonNull(to, "from null").trim();
+            toBuild.to = requireNonNull(to, "to null").trim();
             return this;
         }
 
         public Builder body(String body) {
-            toBuild.body = requireNonNull(body, "from null");
+            toBuild.body = requireNonNull(body, "body null");
             return this;
         }
 

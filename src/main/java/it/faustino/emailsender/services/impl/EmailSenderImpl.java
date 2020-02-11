@@ -8,6 +8,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 @Component
@@ -23,7 +24,9 @@ public class EmailSenderImpl implements EmailSender {
 
     @Override
     public CompletableFuture<Void> sendSimpleMail(Email email) {
-        SimpleMailMessage message = new SimpleMailMessage();
+        Objects.requireNonNull(email, "email cant be null");
+
+        var message = new SimpleMailMessage();
         message.setTo(email.getTo());
         message.setSubject(email.getSubject());
         message.setText(email.getBody());
