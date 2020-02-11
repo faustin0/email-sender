@@ -11,9 +11,7 @@ import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
-import java.util.concurrent.CompletableFuture;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 
@@ -39,10 +37,7 @@ class EmailSenderImplFailureTest {
                 .when(failingSender)
                 .send(any(SimpleMailMessage.class));
 
-        CompletableFuture<Void> outcome = sut.sendSimpleMail(toSend);
-
-        assertThat(outcome)
-                .hasFailedWithThrowableThat()
-                .isInstanceOf(MailSendException.class);//todo use custom
+        assertThatCode(() -> sut.sendSimpleMail(toSend).get())
+                .hasCauseInstanceOf(MailSendException.class);//todo use custom
     }
 }
