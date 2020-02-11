@@ -1,28 +1,62 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <title>Email-sender</title>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
 </head>
 
 <body>
-<form action="#" th:action="@{/sendEmail}" th:object="${emailDTO}" method="post">
-    <label for="from">From</label>
-    <input type="text" id="from" placeholder="From" th:field="*{from}">
+<div class="container">
 
-    <label for="to">To</label>
-    <input type="text" id="to" placeholder="To" th:field="*{to}">
 
-    <label for="body">Body</label>
-    <input type="text" id="body" placeholder="email body" th:field="*{body}">
+    <div class="card">
+        <div class="card-header">
+            Email-Sender
+        </div>
+        <div class="card-body">
 
-    <label for="subject">Subject</label>
-    <input type="text" id="subject" placeholder="email subject" th:field="*{subject}">
+            <form action="#" th:action="@{/sendEmail}" th:object="${emailDTO}" method="post">
 
-    <input type="submit" value="Send Email">
-    <input type="reset" value="Reset"/>
-</form>
+                <div class="form-group">
+                    <label for="from">From</label>
+                    <input type="email" class="form-control" aria-describedby="emailHelp"
+                           id="from" placeholder="From" th:field="*{from}">
+                </div>
+
+                <div class="form-group">
+                    <label for="to">To</label>
+                    <input type="email" class="form-control" aria-describedby="emailHelp"
+                           id="to" placeholder="To" th:field="*{to}">
+                </div>
+
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <input type="text" class="form-control" id="subject" placeholder="email subject"
+                           th:field="*{subject}">
+                </div>
+
+                <div class="form-group">
+                    <label for="body">Body</label>
+                    <textarea class="form-control" id="body" rows="3" placeholder="email body"
+                              th:field="*{body}"></textarea>
+                </div>
+
+
+                <input type="submit" value="Send Email" class="btn btn-primary">
+                <input type="reset" value="Reset" class="btn btn-secondary"/>
+                <!--        <button type="button" class="btn btn-primary">Primary</button>-->
+                <!--        <button type="button" class="btn btn-secondary">Secondary</button>-->
+            </form>
+        </div>
+    </div>
+</div>
+
 <a href="emails">Show Emails</a>
 </body>
 </html>
