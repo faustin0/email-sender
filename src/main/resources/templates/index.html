@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Email-sender</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+
+<body>
+<form action="#" th:action="@{/sendMail}" method="post">
+    <label for="from">From</label>
+    <input type="text" id="from" placeholder="From">
+
+    <label for="to">To</label>
+    <input type="text" id="to" placeholder="To">
+
+    <label for="body">Body</label>
+    <input type="text" id="body" placeholder="email body">
+
+    <input type="submit" value="Send Email">
+</form>
+<a href="emails">Show Emails</a>
+</body>
+</html>
