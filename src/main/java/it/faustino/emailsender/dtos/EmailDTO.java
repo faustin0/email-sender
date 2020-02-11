@@ -1,11 +1,20 @@
 package it.faustino.emailsender.dtos;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 public class EmailDTO {
+    @NotBlank(message = "from can't empty!")
     private String from;
+    @NotNull
     private String to;
+    @NotNull
     private String body;
+    @NotNull
     private String subject;
 
+    public EmailDTO() {
+    }
 
     public EmailDTO(String from, String to, String body) {
         this.from = from;
