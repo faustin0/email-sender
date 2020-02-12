@@ -32,7 +32,7 @@ public class EmailController {
         return emailSender
                 .sendSimpleMail(toSend)
                 .whenCompleteAsync(this::logStatus)
-                .thenApplyAsync(success -> ResponseEntity.ok(""))
+                .thenApplyAsync(success -> ResponseEntity.ok("{}"))
                 .exceptionally(error -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
     }
 
@@ -46,10 +46,10 @@ public class EmailController {
 
     private Email emailMapper(EmailDTO emailDTO) {
         return new Email.Builder()
-                .from(emailDTO.getFrom())
-                .to(emailDTO.getTo())
-                .body(emailDTO.getBody())
-                .subject(emailDTO.getSubject())
+                .from(emailDTO.getFrom().trim())
+                .to(emailDTO.getTo().trim())
+                .body(emailDTO.getBody().trim())
+                .subject(emailDTO.getSubject().trim())
                 .build();
     }
 }

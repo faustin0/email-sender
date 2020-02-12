@@ -1,6 +1,7 @@
 $( document ).ready(function() {
     console.log( "ready!" );
     sendMailEventHandler()
+    $('.toast').toast({animation: true, autohide: true, delay: 2000})
 });
 
 function sendMailEventHandler(){
@@ -17,7 +18,7 @@ function sendMailEventHandler(){
             type: 'POST',
             data: JSON.stringify(toSend),
             success: function(data){
-                 alert('successfully submitted')
+                $('.toast').toast('show');    
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(JSON.stringify(xhr));
