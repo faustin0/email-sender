@@ -1,17 +1,28 @@
-$(function(){
+$( document ).ready(function() {
+    console.log( "ready!" );
+    sendMailEventHandler()
+});
+
+function sendMailEventHandler(){
     $('#email-form').on('submit', function(e){
         e.preventDefault();
+
+        const toSend = Object.fromEntries($('#email-form').serializeArray().map(formEntry=> {
+            return [formEntry.name, formEntry.value];
+        }));
+
         $.ajax({
-            url: "/mails/new",
+            contentType: "application/json; charset=UTF-8",
+            url: "/api/mails",
             type: 'POST',
-            data: $('#email-form').serialize(),
+            data: JSON.stringify(toSend),
             success: function(data){
                  alert('successfully submitted')
             },
-            function (xhr, ajaxOptions, thrownError) {
+            error: function (xhr, ajaxOptions, thrownError) {
                 alert(xhr.status);
                 alert(thrownError);
             }
         });
     });
-});
+}
