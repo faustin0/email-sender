@@ -8,6 +8,10 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <!-- jquery bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     <script src="index.js"></script>
 </head>
 
@@ -25,24 +29,24 @@
                 <div class="form-group">
                     <label for="from">From</label>
                     <input type="email" class="form-control" aria-describedby="emailHelp"
-                           id="from" placeholder="From">
+                           id="from" name="from" placeholder="From">
                 </div>
 
                 <div class="form-group">
                     <label for="to">To</label>
                     <input type="email" class="form-control" aria-describedby="emailHelp"
-                           id="to" placeholder="To">
+                           id="to" name="to" placeholder="To">
                 </div>
 
                 <div class="form-group">
                     <label for="subject">Subject</label>
-                    <input type="text" class="form-control" id="subject" placeholder="email subject">
+                    <input type="text" class="form-control" id="subject" name="subject" placeholder="email subject">
 
                 </div>
 
                 <div class="form-group">
                     <label for="body">Body</label>
-                    <textarea class="form-control" id="body" rows="3" placeholder="email body"></textarea>
+                    <textarea class="form-control" id="body" name="body" rows="3" placeholder="email body"></textarea>
                 </div>
 
 
