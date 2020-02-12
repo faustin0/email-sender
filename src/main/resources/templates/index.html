@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en">
 <head>
     <title>Email-sender</title>
     <meta charset="utf-8">
@@ -8,12 +8,11 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-
+    <script src="index.js"></script>
 </head>
 
 <body>
 <div class="container">
-
 
     <div class="card">
         <div class="card-header">
@@ -21,30 +20,29 @@
         </div>
         <div class="card-body">
 
-            <form action="#" th:action="@{/sendEmail}" th:object="${emailDTO}" method="post">
+            <form id="email-form" method="post">
 
                 <div class="form-group">
                     <label for="from">From</label>
                     <input type="email" class="form-control" aria-describedby="emailHelp"
-                           id="from" placeholder="From" th:field="*{from}">
+                           id="from" placeholder="From">
                 </div>
 
                 <div class="form-group">
                     <label for="to">To</label>
                     <input type="email" class="form-control" aria-describedby="emailHelp"
-                           id="to" placeholder="To" th:field="*{to}">
+                           id="to" placeholder="To">
                 </div>
 
                 <div class="form-group">
                     <label for="subject">Subject</label>
-                    <input type="text" class="form-control" id="subject" placeholder="email subject"
-                           th:field="*{subject}">
+                    <input type="text" class="form-control" id="subject" placeholder="email subject">
+
                 </div>
 
                 <div class="form-group">
                     <label for="body">Body</label>
-                    <textarea class="form-control" id="body" rows="3" placeholder="email body"
-                              th:field="*{body}"></textarea>
+                    <textarea class="form-control" id="body" rows="3" placeholder="email body"></textarea>
                 </div>
 
 

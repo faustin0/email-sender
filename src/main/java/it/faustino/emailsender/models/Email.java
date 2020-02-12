@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 
 public class Email {
     private String from;
-
     private String to;
     private String body;
     private String subject;
