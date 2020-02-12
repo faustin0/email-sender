@@ -1,7 +1,5 @@
 package it.faustino.emailsender;
 
-import it.faustino.emailsender.services.EmailSender;
-import it.faustino.emailsender.services.impl.EmailSenderImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -31,10 +29,5 @@ public class EmailSenderApplication {
         props.put("mail.debug", "true");
 
         return mailSender;
-    }
-
-    @Bean
-    public EmailSender geMailService(JavaMailSender sender) {
-        return new EmailSenderImpl(sender);
     }
 }

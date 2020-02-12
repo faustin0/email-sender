@@ -14,7 +14,7 @@ import javax.validation.Valid;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-@RequestMapping("api/mails")
+@RequestMapping("/api/mails")
 public class EmailController {
 
     private static final Logger log = LoggerFactory.getLogger(EmailController.class);

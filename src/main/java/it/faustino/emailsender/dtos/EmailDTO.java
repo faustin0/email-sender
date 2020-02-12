@@ -10,7 +10,7 @@ public class EmailDTO {
     private String to;
     @NotNull
     private String body;
-    @NotNull
+    @NotBlank
     private String subject;
 
     public EmailDTO() {

@@ -20,8 +20,8 @@ function sendMailEventHandler(){
                  alert('successfully submitted')
             },
             error: function (xhr, ajaxOptions, thrownError) {
-                alert(xhr.status);
-                alert(thrownError);
+                console.log(JSON.stringify(xhr));
+                console.log(thrownError);
             }
         });
     });
