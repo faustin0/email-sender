@@ -6,12 +6,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-@Component
+@Service
 public class EmailSenderImpl implements EmailSender {
 
     private static final Logger log = LoggerFactory.getLogger(EmailSenderImpl.class);
