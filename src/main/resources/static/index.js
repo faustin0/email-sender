@@ -1,7 +1,7 @@
 $( document ).ready(function() {
     console.log( "ready!" );
     sendMailEventHandler()
-    $('.toast').toast({animation: true, autohide: true, delay: 2000})
+    $('.toast').toast({animation: true, autohide: true, delay: 6000})
 });
 
 function sendMailEventHandler(){
@@ -18,11 +18,12 @@ function sendMailEventHandler(){
             type: 'POST',
             data: JSON.stringify(toSend),
             success: function(data){
-                $('.toast').toast('show');    
+                $('#success-toast').toast('show');
             },
             error: function (xhr, ajaxOptions, thrownError) {
-                console.log(JSON.stringify(xhr));
+                console.log(xhr);
                 console.log(thrownError);
+                $('#failure-toast').toast('show');
             }
         });
     });
