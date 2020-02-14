@@ -3,6 +3,7 @@ package it.faustino.emailsender.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.faustino.emailsender.dtos.EmailDTO;
 import it.faustino.emailsender.models.Email;
+import it.faustino.emailsender.services.EmailPersistence;
 import it.faustino.emailsender.services.EmailSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,9 @@ class EmailControllerTest {
 
     @MockBean
     EmailSender emailSender;
+
+    @MockBean
+    EmailPersistence emailPersistence;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -84,6 +88,30 @@ class EmailControllerTest {
 
         sut.perform(asyncDispatch(mvcResult))
                 .andExpect(status().is5xxServerError())
+                .andReturn();
+
+        verify(emailSender).sendSimpleMail(any(Email.class));
+    }
+
+    @Test
+    void shouldBeSuccess_whenMailDelivered_butDBFails() throws Exception {
+        String jsonContent = objectMapper.writeValueAsString(sampleMail);
+
+        doReturn(CompletableFuture.failedFuture(new IllegalStateException("mock db fail")))
+                .when(emailPersistence)
+                .persistEmail(any(Email.class));
+
+        doReturn(CompletableFuture.allOf())
+                .when(emailSender)
+                .sendSimpleMail(any(Email.class));
+
+        MvcResult mvcResult = sut.perform(post("/api/mails/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonContent))
+                .andReturn();
+
+        sut.perform(asyncDispatch(mvcResult))
+                .andExpect(status().isOk())
                 .andReturn();
 
         verify(emailSender).sendSimpleMail(any(Email.class));

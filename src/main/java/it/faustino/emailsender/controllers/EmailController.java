@@ -2,6 +2,7 @@ package it.faustino.emailsender.controllers;
 
 import it.faustino.emailsender.dtos.EmailDTO;
 import it.faustino.emailsender.models.Email;
+import it.faustino.emailsender.services.EmailPersistence;
 import it.faustino.emailsender.services.EmailSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +21,11 @@ public class EmailController {
     private static final Logger log = LoggerFactory.getLogger(EmailController.class);
 
     private final EmailSender emailSender;
+    private final EmailPersistence emailPersistence;
 
-    public EmailController(EmailSender emailSender) {
+    public EmailController(EmailSender emailSender, EmailPersistence emailPersistence) {
         this.emailSender = emailSender;
+        this.emailPersistence = emailPersistence;
     }
 
     @ResponseBody
@@ -31,6 +34,7 @@ public class EmailController {
         Email toSend = emailMapper(emailData);
         return emailSender
                 .sendSimpleMail(toSend)
+                .thenRunAsync(() -> emailPersistence.persistEmail(toSend))
                 .whenCompleteAsync(this::logStatus)
                 .thenApplyAsync(success -> ResponseEntity.ok("{}"))
                 .exceptionally(error -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
