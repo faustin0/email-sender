@@ -1,5 +1,6 @@
 package it.faustino.emailsender;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -13,14 +14,18 @@ public class EmailSenderApplication {
         SpringApplication.run(EmailSenderApplication.class, args);
     }
 
-    //TODO inject from outside
     @Bean
-    public JavaMailSender getJavaMailSender() {
+    public JavaMailSender getJavaMailSender(
+            @Value("${mailSender.host}") String host,
+            @Value("${mailSender.port}") int port,
+            @Value("${mailSender.username}") String userName,
+            @Value("${mailSender.password}") String password
+    ) {
         var mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("localhost");
-        mailSender.setPort(3025);
-        mailSender.setUsername("my.gmail@gmail.com");
-        mailSender.setPassword("password");
+        mailSender.setHost(host);
+        mailSender.setPort(port);
+        mailSender.setUsername(userName);
+        mailSender.setPassword(password);
 
         var props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
