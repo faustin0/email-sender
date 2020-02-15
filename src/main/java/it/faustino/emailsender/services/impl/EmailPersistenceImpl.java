@@ -8,7 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class EmailPersistenceImpl implements EmailPersistence {
@@ -22,6 +25,8 @@ public class EmailPersistenceImpl implements EmailPersistence {
 
     @Override
     public CompletableFuture<Long> persistEmail(Email toPersist) {
+        log.debug("saving mail to repo");
+
         EmailEntity emailEntity = EmailEntity.fromEmail(toPersist);
 
         return CompletableFuture
@@ -32,8 +37,16 @@ public class EmailPersistenceImpl implements EmailPersistence {
                     } else {
                         log.debug("successfully persisted email {}:{}", persistedID, toPersist);
                     }
-                })
-                ;
+                });
+    }
+
+    @Override
+    public List<Email> getAllEmails() {
+        log.debug("fetching emails from repo");
+        return StreamSupport
+                .stream(emailRepository.findAll().spliterator(), false)
+                .map(EmailEntity::toEmail)
+                .collect(Collectors.toUnmodifiableList());
     }
 
 }
