@@ -46,17 +46,21 @@ public class Email {
         }
 
         public Builder from(String from) {
-            toBuild.from = requireNonNull(from, "from null").trim();
+            toBuild.from = requireNonNull(from, "from null")
+                    .trim()
+                    .toLowerCase();
             return this;
         }
 
         public Builder to(String to) {
-            toBuild.to = requireNonNull(to, "to null").trim();
+            toBuild.to = requireNonNull(to, "to null")
+                    .trim()
+                    .toLowerCase();
             return this;
         }
 
         public Builder body(String body) {
-            toBuild.body = requireNonNull(body, "body null");
+            toBuild.body = body == null ? "" : body;
             return this;
         }
 

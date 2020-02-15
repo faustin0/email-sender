@@ -49,4 +49,13 @@ public class EmailEntity {
         emailEntity.created = LocalDateTime.now();
         return emailEntity;
     }
+
+    public Email toEmail() {
+        return new Email.Builder()
+                .from(this.sender)
+                .to(this.to)
+                .subject(this.subject)
+                .body(this.body)
+                .build();
+    }
 }

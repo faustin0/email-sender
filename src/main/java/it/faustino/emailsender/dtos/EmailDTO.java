@@ -6,10 +6,13 @@ import javax.validation.constraints.NotNull;
 public class EmailDTO {
     @NotBlank(message = "from can't empty!")
     private String from;
-    @NotNull
+
+    @NotBlank(message = "to can't empty!")
     private String to;
+
     @NotNull
     private String body;
+
     @NotBlank
     private String subject;
 
