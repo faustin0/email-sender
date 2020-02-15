@@ -9,7 +9,5 @@
     <root level="info">
         <appender-ref ref="STDOUT"/>
     </root>
-    <logger name="it.faustino.emailsender" level="debug">
-        <appender-ref ref="STDOUT"/>
-    </logger>
+    <logger name="it.faustino.emailsender" level="debug"/>
 </configuration>
