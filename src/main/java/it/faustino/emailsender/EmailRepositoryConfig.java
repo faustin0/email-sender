@@ -16,13 +16,14 @@ public class EmailRepositoryConfig extends AbstractJdbcConfiguration {
 
     @Bean
     @Profile("local")
-    public DataSource dataSource() {
-        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-        return builder
+    public DataSource h2DataSource() {
+        return new EmbeddedDatabaseBuilder()
+                .setScriptEncoding("UTF-8")
                 .setType(EmbeddedDatabaseType.H2)
                 .generateUniqueName(true)
                 .addScript("sql/create-email-schema.sql")
                 .build();
     }
+
 
 }
