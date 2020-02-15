@@ -1,14 +1,13 @@
 $( document ).ready(function() {
-
-    /*const func = $(function (mailData) {
-        $('#mailTable').bootstrapTable({
-            data: mailData
-        });
-    });*/
-
-    getAndPopulateMailTable()
-
+   // getAndPopulateMailTable()
+   populateTable("/api/mails");
 });
+
+function populateTable(endpoint){
+    $('#mailTable').bootstrapTable({
+        url: endpoint,
+    })
+}
 
 function getAndPopulateMailTable(){
         $.ajax({
