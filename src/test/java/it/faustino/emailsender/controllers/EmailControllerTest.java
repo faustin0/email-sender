@@ -16,14 +16,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(EmailController.class)
 @ExtendWith(SpringExtension.class)
@@ -42,6 +41,7 @@ class EmailControllerTest {
     ObjectMapper objectMapper;
 
     private EmailDTO sampleMail;
+    private List<Email> mails;
 
     @BeforeEach
     void setUp() {
@@ -51,11 +51,23 @@ class EmailControllerTest {
         sampleMail.setBody("body-field");
         sampleMail.setSubject("subject-field");
 
+        var email = new Email.Builder()
+                .to("a@b.com")
+                .from("b@a.com")
+                .subject("subjet")
+                .body("text")
+                .build();
+
+        mails = List.of(email, email);
     }
 
     @Test
     void shouldRespond_withSuccess_whenEmailSent() throws Exception {
         String jsonContent = objectMapper.writeValueAsString(sampleMail);
+
+        doReturn(CompletableFuture.completedFuture(1L))
+                .when(emailPersistence)
+                .persistEmail(any(Email.class));
 
         doReturn(CompletableFuture.allOf())
                 .when(emailSender)
@@ -77,6 +89,10 @@ class EmailControllerTest {
     void shouldRespond_withError_whenEmailFail() throws Exception {
         String jsonContent = objectMapper.writeValueAsString(sampleMail);
 
+        doReturn(CompletableFuture.completedFuture(1L))
+                .when(emailPersistence)
+                .persistEmail(any(Email.class));
+
         doReturn(CompletableFuture.failedFuture(new IllegalStateException("mock fail")))
                 .when(emailSender)
                 .sendSimpleMail(any(Email.class));
@@ -94,14 +110,34 @@ class EmailControllerTest {
     }
 
     @Test
-    void shouldBeSuccess_whenMailDelivered_butDBFails() throws Exception {
+    void shouldBeError_butDBFails() throws Exception {
         String jsonContent = objectMapper.writeValueAsString(sampleMail);
 
         doReturn(CompletableFuture.failedFuture(new IllegalStateException("mock db fail")))
                 .when(emailPersistence)
                 .persistEmail(any(Email.class));
 
-        doReturn(CompletableFuture.allOf())
+        MvcResult mvcResult = sut.perform(post("/api/mails/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonContent))
+                .andReturn();
+
+        sut.perform(asyncDispatch(mvcResult))
+                .andExpect(status().is5xxServerError())
+                .andReturn();
+
+        verify(emailPersistence).persistEmail(any(Email.class));
+    }
+
+    @Test
+    void shouldBeFailure_whenMailFail_butDBisOk() throws Exception {
+        String jsonContent = objectMapper.writeValueAsString(sampleMail);
+
+        doReturn(CompletableFuture.completedFuture(1L))
+                .when(emailPersistence)
+                .persistEmail(any(Email.class));
+
+        doReturn(CompletableFuture.failedFuture(new IllegalStateException("mock email fail")))
                 .when(emailSender)
                 .sendSimpleMail(any(Email.class));
 
@@ -111,10 +147,32 @@ class EmailControllerTest {
                 .andReturn();
 
         sut.perform(asyncDispatch(mvcResult))
-                .andExpect(status().isOk())
+                .andExpect(status().is5xxServerError())
                 .andReturn();
 
         verify(emailSender).sendSimpleMail(any(Email.class));
+        verify(emailPersistence).persistEmail(any(Email.class));
+    }
+
+    @Test
+    void shouldGetAllEmails() throws Exception {
+        doReturn(mails)
+                .when(emailPersistence)
+                .getAllEmails();
+
+        MvcResult mvcResult = sut.perform(get("/api/mails/")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        sut.perform(asyncDispatch(mvcResult))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$.[0].from").value("b@a.com"))
+                .andExpect(jsonPath("$.[0].to").value("a@b.com"))
+                .andExpect(jsonPath("$.[1].body").value("text"))
+                .andExpect(jsonPath("$.[1].subject").value("subjet"));
+
+        verify(emailPersistence, description("only one call")).getAllEmails();
     }
 }
 

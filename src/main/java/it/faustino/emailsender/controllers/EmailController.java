@@ -12,7 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/mails")
@@ -31,29 +33,57 @@ public class EmailController {
     @ResponseBody
     @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public CompletableFuture<ResponseEntity<String>> newMail(@RequestBody @Valid EmailDTO emailData) {
-        Email toSend = emailMapper(emailData);
-        return emailSender
-                .sendSimpleMail(toSend)
-                .thenRunAsync(() -> emailPersistence.persistEmail(toSend))
-                .whenCompleteAsync(this::logStatus)
-                .thenApplyAsync(success -> ResponseEntity.ok("{}"))
-                .exceptionally(error -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+        Email toSend = emailDTOtoEmail(emailData);
+
+        return emailPersistence
+                .persistEmail(toSend)
+                .thenCompose(emailId -> emailSender
+                        .sendSimpleMail(toSend)
+                        .thenApply(success -> emailId)
+                )
+                .whenComplete(this::logStatus)
+                .thenApply(emailId -> ResponseEntity.ok(String.format("{\"%s\":%d}", "emailId", emailId)))
+                .exceptionally(throwable -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
     }
 
-    private void logStatus(Void ignored, Throwable anError) {
+    @ResponseBody
+    @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CompletableFuture<ResponseEntity<List<EmailDTO>>> getAllMails() {
+        return CompletableFuture
+                .supplyAsync(emailPersistence::getAllEmails)
+                .thenApply(this::toEmailDTOS)
+                .thenApply(ResponseEntity::ok);
+    }
+
+    private void logStatus(Long emailID, Throwable anError) {
         if (anError != null) {
-            log.error("", anError);
+            log.error("failure dispatching request", anError);
         } else {
-            log.debug("successfully dispatched request");
+            log.debug("successfully dispatched request, emailId={}", emailID);
         }
     }
 
-    private Email emailMapper(EmailDTO emailDTO) {
+    private Email emailDTOtoEmail(EmailDTO emailDTO) {
         return new Email.Builder()
                 .from(emailDTO.getFrom().trim())
                 .to(emailDTO.getTo().trim())
                 .body(emailDTO.getBody().trim())
                 .subject(emailDTO.getSubject().trim())
                 .build();
+    }
+
+    private EmailDTO emailToEmailDTO(Email email) {
+        EmailDTO emailDTO = new EmailDTO();
+        emailDTO.setFrom(email.getFrom());
+        emailDTO.setTo(email.getTo());
+        emailDTO.setBody(email.getBody());
+        emailDTO.setSubject(email.getSubject());
+        return emailDTO;
+    }
+
+    private List<EmailDTO> toEmailDTOS(List<Email> emails) {
+        return emails.stream()
+                .map(this::emailToEmailDTO)
+                .collect(Collectors.toUnmodifiableList());
     }
 }
