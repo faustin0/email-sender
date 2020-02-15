@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -48,7 +49,7 @@ public class EmailController {
 
     @ResponseBody
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CompletableFuture<ResponseEntity<List<EmailDTO>>> getAllMails() {
+    public CompletableFuture<ResponseEntity<Collection<EmailDTO>>> getAllMails() {
         return CompletableFuture
                 .supplyAsync(emailPersistence::getAllEmails)
                 .thenApply(this::toEmailDTOS)

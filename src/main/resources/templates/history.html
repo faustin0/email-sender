@@ -8,6 +8,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css">
 
     <!-- jquery bootstrap -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"
@@ -15,7 +16,9 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
             integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
             crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
 
+    <script src="history.js"></script>
 </head>
 
 <body>
@@ -36,7 +39,20 @@
 </nav>
 
 <div class="container">
+    <table class="table table-striped .table-hover" id="mailTable">
+        <thead>
+        <tr>
+            <th scope="col" data-field="id">#</th>
+            <th scope="col" data-field="to">To</th>
+            <th scope="col" data-field="from">From</th>
+            <th scope="col" data-field="subject">Subject</th>
+            <th scope="col" data-field="body">Body</th>
+        </tr>
+        </thead>
+        <tbody>
 
+        </tbody>
+    </table>
 
 </div>
 </body>
