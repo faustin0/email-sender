@@ -1,7 +1,8 @@
 package it.faustino.emailsender.controllers;
 
 import it.faustino.emailsender.dtos.EmailDTO;
-import it.faustino.emailsender.models.Email;
+import it.faustino.emailsender.models.EmailBuilder;
+import it.faustino.emailsender.models.EmailEntity;
 import it.faustino.emailsender.services.EmailPersistence;
 import it.faustino.emailsender.services.EmailSender;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -34,7 +36,7 @@ public class EmailController {
     @ResponseBody
     @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public CompletableFuture<ResponseEntity<String>> newMail(@RequestBody @Valid EmailDTO emailData) {
-        Email toSend = emailDTOtoEmail(emailData);
+        EmailEntity toSend = emailDTOtoEmail(emailData);
 
         return emailPersistence
                 .persistEmail(toSend)
@@ -64,25 +66,27 @@ public class EmailController {
         }
     }
 
-    private Email emailDTOtoEmail(EmailDTO emailDTO) {
-        return new Email.Builder()
-                .from(emailDTO.getFrom().trim())
+    private EmailEntity emailDTOtoEmail(EmailDTO emailDTO) {
+        return EmailBuilder.builder()
+                .sender(emailDTO.getFrom().trim())
                 .to(emailDTO.getTo().trim())
                 .body(emailDTO.getBody().trim())
                 .subject(emailDTO.getSubject().trim())
+                .created(LocalDateTime.now())
                 .build();
     }
 
-    private EmailDTO emailToEmailDTO(Email email) {
+    private EmailDTO emailToEmailDTO(EmailEntity email) {
         EmailDTO emailDTO = new EmailDTO();
-        emailDTO.setFrom(email.getFrom());
+        emailDTO.setID(email.getId());
+        emailDTO.setFrom(email.getSender());
         emailDTO.setTo(email.getTo());
         emailDTO.setBody(email.getBody());
         emailDTO.setSubject(email.getSubject());
         return emailDTO;
     }
 
-    private List<EmailDTO> toEmailDTOS(List<Email> emails) {
+    private List<EmailDTO> toEmailDTOS(List<EmailEntity> emails) {
         return emails.stream()
                 .map(this::emailToEmailDTO)
                 .collect(Collectors.toUnmodifiableList());

@@ -1,7 +1,7 @@
 package it.faustino.emailsender.services.impl;
 
-import it.faustino.emailsender.models.Email;
-import it.faustino.emailsender.repositories.EmailEntity;
+import it.faustino.emailsender.models.EmailBuilder;
+import it.faustino.emailsender.models.EmailEntity;
 import it.faustino.emailsender.repositories.EmailRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,31 +30,34 @@ class EmailPersistenceImplTest {
 
     @Test
     void shouldGetAllEmails() {
-        var email = new Email.Builder()
+        var email = EmailBuilder.builder()
+                .id(1L)
                 .subject("sogg")
                 .body("some text")
                 .to("a@b.com")
-                .from("b@a.com")
+                .sender("b@a.com")
+                .created(LocalDateTime.now())
                 .build();
 
-        var emailNoBody = new Email.Builder()
+        var emailNoBody = EmailBuilder.builder()
+//                .id(2L)
                 .subject("sogg")
+                .body("")
                 .to("a@b.com")
-                .from("b@a.com")
+                .sender("b@a.com")
+                .created(LocalDateTime.now())
                 .build();
 
-        var emailEntity = EmailEntity.fromEmail(email);
-        var emailEntityNoBody = EmailEntity.fromEmail(emailNoBody);
-        var emails = List.of(emailEntity, emailEntity, emailEntityNoBody, emailEntityNoBody);
+        var emails = List.of(email, email, emailNoBody, emailNoBody);
 
         Mockito.doReturn(emails)
                 .when(repository)
                 .findAll();
 
-        List<Email> allEmails = sut.getAllEmails();
+        List<EmailEntity> allEmails = sut.getAllEmails();
         assertThat(allEmails)
                 .isNotEmpty()
                 .doesNotContainNull()
-                .allSatisfy(e -> assertThat(e).hasNoNullFieldsOrProperties());
+                .allSatisfy(e -> assertThat(e).hasNoNullFieldsOrPropertiesExcept("id"));
     }
 }

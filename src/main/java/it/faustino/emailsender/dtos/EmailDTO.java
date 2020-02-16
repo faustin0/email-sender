@@ -1,9 +1,14 @@
 package it.faustino.emailsender.dtos;
 
+import org.springframework.lang.Nullable;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 public class EmailDTO {
+    @Nullable
+    private Long id;
+
     @NotBlank(message = "from can't empty!")
     private String from;
 
@@ -23,6 +28,15 @@ public class EmailDTO {
         this.from = from;
         this.to = to;
         this.body = body;
+    }
+
+    @Nullable
+    public Long getID() {
+        return id;
+    }
+
+    public void setID(@Nullable Long id) {
+        this.id = id;
     }
 
     public String getFrom() {

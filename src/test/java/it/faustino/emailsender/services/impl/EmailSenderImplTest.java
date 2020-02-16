@@ -5,7 +5,7 @@ import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.GreenMailUtil;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import it.faustino.emailsender.MailIntegrationTestConfiguration;
-import it.faustino.emailsender.models.Email;
+import it.faustino.emailsender.models.EmailBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +17,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import javax.mail.internet.MimeMessage;
+import java.time.LocalDateTime;
 import java.util.concurrent.ExecutionException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,11 +47,12 @@ class EmailSenderImplTest {
 
     @Test
     void shouldSend_simpleMail() throws ExecutionException, InterruptedException {
-        var toSend = new Email.Builder()
+        var toSend = EmailBuilder.builder()
                 .to("to@localhost.com")
-                .from("me@localhost.com")
+                .sender("me@localhost.com")
                 .subject("Test Email")
                 .body("some text from test!")
+                .created(LocalDateTime.now())
                 .build();
 
         sut.sendSimpleMail(toSend).get();
@@ -64,11 +66,12 @@ class EmailSenderImplTest {
 
     @Test
     void shouldSend_ExpectedMail() throws ExecutionException, InterruptedException {
-        var toSend = new Email.Builder()
+        var toSend = EmailBuilder.builder()
                 .to("to@localhost.com")
-                .from("me@localhost.com")
+                .sender("me@localhost.com")
                 .subject("Test Email")
                 .body("some text from test!")
+                .created(LocalDateTime.now())
                 .build();
 
         var expected = new SimpleMailMessage();
@@ -83,11 +86,12 @@ class EmailSenderImplTest {
 
     @Test
     void shouldGetError_simpleMail() throws ExecutionException, InterruptedException {
-        var toSend = new Email.Builder()
+        var toSend = EmailBuilder.builder()
                 .to("to@localhost.com")
-                .from("me@localhost.com")
+                .sender("me@localhost.com")
                 .subject("Test Email")
                 .body("some text from test!")
+                .created(LocalDateTime.now())
                 .build();
 
         sut.sendSimpleMail(toSend).get();

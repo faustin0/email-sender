@@ -2,7 +2,8 @@ package it.faustino.emailsender.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.faustino.emailsender.dtos.EmailDTO;
-import it.faustino.emailsender.models.Email;
+import it.faustino.emailsender.models.EmailBuilder;
+import it.faustino.emailsender.models.EmailEntity;
 import it.faustino.emailsender.services.EmailPersistence;
 import it.faustino.emailsender.services.EmailSender;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -41,7 +43,7 @@ class EmailControllerTest {
     ObjectMapper objectMapper;
 
     private EmailDTO sampleMail;
-    private List<Email> mails;
+    private List<EmailEntity> mails;
 
     @BeforeEach
     void setUp() {
@@ -51,11 +53,12 @@ class EmailControllerTest {
         sampleMail.setBody("body-field");
         sampleMail.setSubject("subject-field");
 
-        var email = new Email.Builder()
+        var email = EmailBuilder.builder()
                 .to("a@b.com")
-                .from("b@a.com")
+                .sender("b@a.com")
                 .subject("subjet")
                 .body("text")
+                .created(LocalDateTime.now())
                 .build();
 
         mails = List.of(email, email);
@@ -67,11 +70,11 @@ class EmailControllerTest {
 
         doReturn(CompletableFuture.completedFuture(1L))
                 .when(emailPersistence)
-                .persistEmail(any(Email.class));
+                .persistEmail(any(EmailEntity.class));
 
         doReturn(CompletableFuture.allOf())
                 .when(emailSender)
-                .sendSimpleMail(any(Email.class));
+                .sendSimpleMail(any(EmailEntity.class));
 
         MvcResult mvcResult = sut.perform(post("/api/mails/")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -82,7 +85,7 @@ class EmailControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        verify(emailSender).sendSimpleMail(any(Email.class));
+        verify(emailSender).sendSimpleMail(any(EmailEntity.class));
     }
 
     @Test
@@ -91,11 +94,11 @@ class EmailControllerTest {
 
         doReturn(CompletableFuture.completedFuture(1L))
                 .when(emailPersistence)
-                .persistEmail(any(Email.class));
+                .persistEmail(any(EmailEntity.class));
 
         doReturn(CompletableFuture.failedFuture(new IllegalStateException("mock fail")))
                 .when(emailSender)
-                .sendSimpleMail(any(Email.class));
+                .sendSimpleMail(any(EmailEntity.class));
 
         MvcResult mvcResult = sut.perform(post("/api/mails/")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -106,7 +109,7 @@ class EmailControllerTest {
                 .andExpect(status().is5xxServerError())
                 .andReturn();
 
-        verify(emailSender).sendSimpleMail(any(Email.class));
+        verify(emailSender).sendSimpleMail(any(EmailEntity.class));
     }
 
     @Test
@@ -115,7 +118,7 @@ class EmailControllerTest {
 
         doReturn(CompletableFuture.failedFuture(new IllegalStateException("mock db fail")))
                 .when(emailPersistence)
-                .persistEmail(any(Email.class));
+                .persistEmail(any(EmailEntity.class));
 
         MvcResult mvcResult = sut.perform(post("/api/mails/")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -126,7 +129,7 @@ class EmailControllerTest {
                 .andExpect(status().is5xxServerError())
                 .andReturn();
 
-        verify(emailPersistence).persistEmail(any(Email.class));
+        verify(emailPersistence).persistEmail(any(EmailEntity.class));
     }
 
     @Test
@@ -135,11 +138,11 @@ class EmailControllerTest {
 
         doReturn(CompletableFuture.completedFuture(1L))
                 .when(emailPersistence)
-                .persistEmail(any(Email.class));
+                .persistEmail(any(EmailEntity.class));
 
         doReturn(CompletableFuture.failedFuture(new IllegalStateException("mock email fail")))
                 .when(emailSender)
-                .sendSimpleMail(any(Email.class));
+                .sendSimpleMail(any(EmailEntity.class));
 
         MvcResult mvcResult = sut.perform(post("/api/mails/")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -150,8 +153,8 @@ class EmailControllerTest {
                 .andExpect(status().is5xxServerError())
                 .andReturn();
 
-        verify(emailSender).sendSimpleMail(any(Email.class));
-        verify(emailPersistence).persistEmail(any(Email.class));
+        verify(emailSender).sendSimpleMail(any(EmailEntity.class));
+        verify(emailPersistence).persistEmail(any(EmailEntity.class));
     }
 
     @Test

@@ -1,7 +1,6 @@
 package it.faustino.emailsender.services.impl;
 
-import it.faustino.emailsender.models.Email;
-import it.faustino.emailsender.repositories.EmailEntity;
+import it.faustino.emailsender.models.EmailEntity;
 import it.faustino.emailsender.repositories.EmailRepository;
 import it.faustino.emailsender.services.EmailPersistence;
 import org.slf4j.Logger;
@@ -9,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -24,13 +24,12 @@ public class EmailPersistenceImpl implements EmailPersistence {
     }
 
     @Override
-    public CompletableFuture<Long> persistEmail(Email toPersist) {
+    public CompletableFuture<Long> persistEmail(EmailEntity toPersist) {
+        Objects.requireNonNull(toPersist, "toPersist cant be null");
         log.debug("saving mail to repo");
 
-        EmailEntity emailEntity = EmailEntity.fromEmail(toPersist);
-
         return CompletableFuture
-                .supplyAsync(() -> emailRepository.save(emailEntity).getId())
+                .supplyAsync(() -> emailRepository.save(toPersist).getId())
                 .whenComplete((persistedID, anError) -> {
                     if (anError != null) {
                         log.error("", anError);
@@ -41,11 +40,10 @@ public class EmailPersistenceImpl implements EmailPersistence {
     }
 
     @Override
-    public List<Email> getAllEmails() {
+    public List<EmailEntity> getAllEmails() {
         log.debug("fetching emails from repo");
         return StreamSupport
                 .stream(emailRepository.findAll().spliterator(), false)
-                .map(EmailEntity::toEmail)
                 .collect(Collectors.toUnmodifiableList());
     }
 

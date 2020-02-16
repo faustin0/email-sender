@@ -1,7 +1,7 @@
 package it.faustino.emailsender.services.impl;
 
 import it.faustino.emailsender.MailIntegrationTestConfiguration;
-import it.faustino.emailsender.models.Email;
+import it.faustino.emailsender.models.EmailBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +10,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,7 +33,13 @@ class EmailSenderImplFailureTest {
 
     @Test
     void shouldGetError_simpleMail() {
-        var toSend = new Email.Builder().build();
+        var toSend = EmailBuilder.builder()
+                .body("")
+                .created(LocalDateTime.now())
+                .sender("")
+                .subject("")
+                .to("")
+                .build();
 
         doThrow(MailSendException.class)
                 .when(failingSender)

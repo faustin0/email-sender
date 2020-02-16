@@ -1,9 +1,8 @@
 package it.faustino.emailsender.repositories;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import it.faustino.emailsender.models.EmailBuilder;
+import it.faustino.emailsender.models.EmailEntity;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureJdbc;
@@ -33,6 +32,7 @@ class EmailRepositoryTest {
     }
 
     @Test
+    @Order(1)
     void shouldGet_EmptyRepo() {
         Iterable<EmailEntity> emailEntities = sut.findAll();
 
@@ -40,21 +40,25 @@ class EmailRepositoryTest {
     }
 
     @Test
+    @Order(2)
     void shouldInsert_and_getEmail() {
-        var toSave = new EmailEntity();
-        toSave.body = "a text";
-        toSave.created = LocalDateTime.now();
-        toSave.sender = "a@b.com";
-        toSave.subject = "an email";
-        toSave.to = "b@a.com";
+
+        EmailEntity toSave = EmailBuilder.builder()
+                .body("a text")
+                .created(LocalDateTime.now())
+                .sender("a@b.com")
+                .subject("an email")
+                .to("b@a.com")
+                .build();
 
         EmailEntity saved = sut.save(toSave);
+        EmailEntity fetched = sut.findById(1L).get();
 
         Iterable<EmailEntity> all = sut.findAll();
 
-        assertThat(saved.id).isNotNull();
+        assertThat(saved.getId()).isNotNull();
         assertThat(all)
-                .extracting(emailEntity -> emailEntity.to)
+                .extracting(EmailEntity::getTo)
                 .contains("b@a.com");
     }
 

@@ -1,6 +1,6 @@
 package it.faustino.emailsender.services.impl;
 
-import it.faustino.emailsender.models.Email;
+import it.faustino.emailsender.models.EmailEntity;
 import it.faustino.emailsender.services.EmailSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,14 +23,14 @@ public class EmailSenderImpl implements EmailSender {
     }
 
     @Override
-    public CompletableFuture<Void> sendSimpleMail(Email email) {
+    public CompletableFuture<Void> sendSimpleMail(EmailEntity email) {
         Objects.requireNonNull(email, "email cant be null");
 
         var message = new SimpleMailMessage();
         message.setTo(email.getTo());
         message.setSubject(email.getSubject());
         message.setText(email.getBody());
-        message.setFrom(email.getFrom());
+        message.setFrom(email.getSender());
 
         log.debug("sending mail {}", email);
         return CompletableFuture.runAsync(
