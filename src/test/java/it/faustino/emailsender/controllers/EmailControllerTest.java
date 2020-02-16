@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -44,6 +45,7 @@ class EmailControllerTest {
 
     private EmailDTO sampleMail;
     private List<EmailEntity> mails;
+    private EmailEntity email;
 
     @BeforeEach
     void setUp() {
@@ -53,7 +55,7 @@ class EmailControllerTest {
         sampleMail.setBody("body-field");
         sampleMail.setSubject("subject-field");
 
-        var email = EmailBuilder.builder()
+        email = EmailBuilder.builder()
                 .to("a@b.com")
                 .sender("b@a.com")
                 .subject("subjet")
@@ -144,12 +146,12 @@ class EmailControllerTest {
                 .when(emailSender)
                 .sendSimpleMail(any(EmailEntity.class));
 
-        MvcResult mvcResult = sut.perform(post("/api/mails/")
+        var result = sut.perform(post("/api/mails/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonContent))
                 .andReturn();
 
-        sut.perform(asyncDispatch(mvcResult))
+        sut.perform(asyncDispatch(result))
                 .andExpect(status().is5xxServerError())
                 .andReturn();
 
@@ -163,11 +165,11 @@ class EmailControllerTest {
                 .when(emailPersistence)
                 .getAllEmails();
 
-        MvcResult mvcResult = sut.perform(get("/api/mails/")
+        var result = sut.perform(get("/api/mails/")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andReturn();
 
-        sut.perform(asyncDispatch(mvcResult))
+        sut.perform(asyncDispatch(result))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.[0].from").value("b@a.com"))
@@ -176,6 +178,40 @@ class EmailControllerTest {
                 .andExpect(jsonPath("$.[1].subject").value("subjet"));
 
         verify(emailPersistence, description("only one call")).getAllEmails();
+    }
+
+    @Test
+    void shouldGetEmail_success() throws Exception {
+        doReturn(CompletableFuture.completedFuture(Optional.of(email)))
+                .when(emailPersistence)
+                .getEmail(1L);
+
+        var result = sut.perform(get("/api/mails/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        sut.perform(asyncDispatch(result))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$.from").value("b@a.com"))
+                .andExpect(jsonPath("$.to").value("a@b.com"))
+                .andExpect(jsonPath("$.body").value("text"))
+                .andExpect(jsonPath("$.subject").value("subjet"));
+
+    }
+
+    @Test
+    void shouldGetEmail_notFound() throws Exception {
+        doReturn(CompletableFuture.completedFuture(Optional.empty()))
+                .when(emailPersistence)
+                .getEmail(1L);
+
+        MvcResult result = sut.perform(get("/api/mails/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        sut.perform(asyncDispatch(result))
+                .andExpect(status().isNotFound());
     }
 }
 

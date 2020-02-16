@@ -58,6 +58,15 @@ public class EmailController {
                 .thenApply(ResponseEntity::ok);
     }
 
+    @ResponseBody
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CompletableFuture<ResponseEntity<EmailDTO>> getMail(@PathVariable("id") long mailId) {
+        return emailPersistence
+                .getEmail(mailId)
+                .thenApply(emailEntity -> emailEntity.map(this::emailToEmailDTO))
+                .thenApply(ResponseEntity::of);
+    }
+
     private void logStatus(Long emailID, Throwable anError) {
         if (anError != null) {
             log.error("failure dispatching request", anError);
