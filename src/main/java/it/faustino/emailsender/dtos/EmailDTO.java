@@ -18,7 +18,7 @@ public class EmailDTO {
     @NotNull
     private String body;
 
-    @NotBlank
+    @NotBlank(message = "subject can't empty!")
     private String subject;
 
     public EmailDTO() {

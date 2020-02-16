@@ -23,6 +23,7 @@ function sendMailEventHandler(){
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr);
                 console.log(thrownError);
+                $('#error-msg').text(xhr.responseJSON.error)
                 $('#failure-toast').toast('show');
             }
         });
