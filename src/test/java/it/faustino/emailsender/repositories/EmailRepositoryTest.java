@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -42,7 +43,6 @@ class EmailRepositoryTest {
     @Test
     @Order(2)
     void shouldInsert_and_getEmail() {
-
         EmailEntity toSave = EmailBuilder.builder()
                 .body("a text")
                 .created(LocalDateTime.now())
@@ -52,11 +52,22 @@ class EmailRepositoryTest {
                 .build();
 
         EmailEntity saved = sut.save(toSave);
-        EmailEntity fetched = sut.findById(1L).get();
 
-        Iterable<EmailEntity> all = sut.findAll();
+        Optional<EmailEntity> fetched = sut.findById(saved.getId().getAsLong());
 
         assertThat(saved.getId()).isNotNull();
+        assertThat(fetched)
+                .isPresent()
+                .hasValueSatisfying(
+                        emailEntity -> assertThat(emailEntity).hasNoNullFieldsOrProperties()
+                );
+    }
+
+    @Test
+    @Order(3)
+    void shouldGetAllEmails() {
+        Iterable<EmailEntity> all = sut.findAll();
+
         assertThat(all)
                 .extracting(EmailEntity::getTo)
                 .contains("b@a.com");

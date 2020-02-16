@@ -27,9 +27,9 @@ public class EmailPersistenceImpl implements EmailPersistence {
     public CompletableFuture<Long> persistEmail(EmailEntity toPersist) {
         Objects.requireNonNull(toPersist, "toPersist cant be null");
         log.debug("saving mail to repo");
-
         return CompletableFuture
                 .supplyAsync(() -> emailRepository.save(toPersist).getId())
+                .thenApply(maybeId -> maybeId.orElseThrow(() -> new IllegalStateException("persisted email without ID")))
                 .whenComplete((persistedID, anError) -> {
                     if (anError != null) {
                         log.error("", anError);

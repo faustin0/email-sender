@@ -8,20 +8,20 @@ import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.lang.Nullable;
 
 import java.time.LocalDateTime;
+import java.util.OptionalLong;
 
 @Table("emails")
 @Immutable
 @Value.Style(newBuilder = "builder")
 public class EmailEntity {
-
     @Id
     @Nullable
-    private Long id;
-    private String sender;
-    private String to;
-    private String body;
-    private String subject;
-    private LocalDateTime created;
+    private final Long id;
+    private final String sender;
+    private final String to;
+    private final String body;
+    private final String subject;
+    private final LocalDateTime created;
 
     private EmailEntity(Long id, String sender, String to, String body, String subject, LocalDateTime created) {
         this.id = id;
@@ -32,8 +32,10 @@ public class EmailEntity {
         this.created = created;
     }
 
-    public Long getId() {
-        return id;
+    public OptionalLong getId() {
+        return this.id != null
+                ? OptionalLong.of(this.id)
+                : OptionalLong.empty();
     }
 
     public String getSender() {
@@ -56,6 +58,10 @@ public class EmailEntity {
         return created;
     }
 
+
+    public EmailEntity withId(Long id) {
+        return new EmailEntity(id, sender, to, body, subject, created);
+    }
 
     @Builder.Factory
     public static EmailEntity email(

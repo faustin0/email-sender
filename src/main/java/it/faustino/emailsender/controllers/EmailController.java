@@ -78,7 +78,9 @@ public class EmailController {
 
     private EmailDTO emailToEmailDTO(EmailEntity email) {
         EmailDTO emailDTO = new EmailDTO();
-        emailDTO.setID(email.getId());
+        email.getId().ifPresent(
+                emailDTO::setID
+        );
         emailDTO.setFrom(email.getSender());
         emailDTO.setTo(email.getTo());
         emailDTO.setBody(email.getBody());
