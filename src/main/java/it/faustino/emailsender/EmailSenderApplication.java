@@ -45,9 +45,10 @@ public class EmailSenderApplication {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("mails")
                 .select()
                 .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.any())
+                .paths(PathSelectors.ant("/api/mails/**"))
                 .build();
     }
 }
