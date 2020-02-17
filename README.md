@@ -15,6 +15,8 @@ To use local properties (and in memory DB):
 check for the following line in the logs to verify activation:  
 `INFO  i.f.e.EmailSenderApplication - The following profiles are active: local`
 
+the running application can be found at: localhost:8080/ 
+
 ## Configuration
 Mail server configuration can be set in the `application.properties` or passed 
 as an env_vars/java properties.  
