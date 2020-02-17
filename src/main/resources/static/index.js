@@ -23,7 +23,7 @@ function sendMailEventHandler(){
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr);
                 console.log(thrownError);
-                $('#error-msg').text(xhr.responseJSON.error)
+                //$('#error-msg').text(xhr.responseJSON.error) todo handle missing response json
                 $('#failure-toast').toast('show');
             }
         });
