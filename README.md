@@ -9,8 +9,11 @@ To run the project simply run one of the following:
  * `java -jar .\target\target\email-sender-0.0.1-SNAPSHOT.jar`
 
 To use local properties (and in memory DB):  
-* `--spring.profiles.active=local` (mvn mode)
-* `-Dspring.profiles.active=local` (java mode)  
+`-Dspring.profiles.active=local`  
+examples:  
+* `java -jar -Dspring.profiles.active=local path-to.jar`
+* `mvn spring-boot:run -Dspring-boot.run.profiles=local`
+* `java -jar path-to.jar --spring.profiles.active=local`
 
 check for the following line in the logs to verify activation:  
 `INFO  i.f.e.EmailSenderApplication - The following profiles are active: local`
