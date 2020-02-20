@@ -29,3 +29,6 @@ An `.sql` script can be found in `sql/create-email-schema.sql` to create the req
 ## Online documentation
 run the app and navigate to:
 http://localhost:8080/swagger-ui.htm
+
+### Troubleshoot
+in case of compiling failure in IDE please check: https://immutables.github.io/apt.html
