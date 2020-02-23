@@ -33,7 +33,6 @@ public class EmailController {
         this.emailPersistence = emailPersistence;
     }
 
-    @ResponseBody
     @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public CompletableFuture<ResponseEntity<String>> newMail(@RequestBody @Valid EmailDTO emailData) {
         EmailEntity toSend = emailDTOtoEmail(emailData);
@@ -49,7 +48,6 @@ public class EmailController {
                 .exceptionally(throwable -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
     }
 
-    @ResponseBody
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public CompletableFuture<ResponseEntity<Collection<EmailDTO>>> getAllMails() {
         return CompletableFuture
@@ -58,7 +56,6 @@ public class EmailController {
                 .thenApply(ResponseEntity::ok);
     }
 
-    @ResponseBody
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public CompletableFuture<ResponseEntity<EmailDTO>> getMail(@PathVariable("id") long mailId) {
         return emailPersistence
@@ -71,7 +68,7 @@ public class EmailController {
         if (anError != null) {
             log.error("failure dispatching request", anError);
         } else {
-            log.debug("successfully dispatched request, emailId={}", emailID);
+            log.info("successfully dispatched request, emailId={}", emailID);
         }
     }
 
