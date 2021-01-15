@@ -7,7 +7,9 @@
 --    body text
 --);
 
-CREATE TABLE IF NOT EXISTS EMAILS
+DROP TABLE IF EXISTS "emails";
+
+CREATE TABLE "emails"
 (
     id serial AUTO_INCREMENT NOT NULL,
     sender character varying  NOT NULL,

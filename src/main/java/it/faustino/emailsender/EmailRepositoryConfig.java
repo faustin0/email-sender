@@ -20,7 +20,6 @@ public class EmailRepositoryConfig extends AbstractJdbcConfiguration {
         return new EmbeddedDatabaseBuilder()
                 .setScriptEncoding("UTF-8")
                 .setType(EmbeddedDatabaseType.H2)
-                .generateUniqueName(true)
                 .addScript("sql/create-email-schema.sql")
                 .build();
     }
