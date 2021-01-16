@@ -2,6 +2,7 @@ package it.faustino.emailsender.services.impl;
 
 import it.faustino.emailsender.models.EmailBuilder;
 import it.faustino.emailsender.models.EmailEntity;
+import it.faustino.emailsender.models.MailHeader;
 import it.faustino.emailsender.repositories.EmailRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,21 +31,18 @@ class EmailPersistenceImplTest {
 
     @Test
     void shouldGetAllEmails() {
+        var mailHeader = MailHeader.createMailHeader("a@b.com", "b@a.com", "an email");
+
         var email = EmailBuilder.builder()
                 .id(1L)
-                .subject("sogg")
+                .mailHeader(mailHeader)
                 .body("some text")
-                .to("a@b.com")
-                .sender("b@a.com")
                 .created(LocalDateTime.now())
                 .build();
 
         var emailNoBody = EmailBuilder.builder()
-//                .id(2L)
-                .subject("sogg")
+                .mailHeader(mailHeader)
                 .body("")
-                .to("a@b.com")
-                .sender("b@a.com")
                 .created(LocalDateTime.now())
                 .build();
 

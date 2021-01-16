@@ -27,10 +27,10 @@ public class EmailSenderImpl implements EmailSender {
         Objects.requireNonNull(email, "email cant be null");
 
         var message = new SimpleMailMessage();
-        message.setTo(email.getTo());
+        message.setTo(email.getToEmailAddress().getAddress());
         message.setSubject(email.getSubject());
         message.setText(email.getBody());
-        message.setFrom(email.getSender());
+        message.setFrom(email.getFromEmailAddress().getAddress());
 
         log.debug("sending mail {}", email);
         return CompletableFuture.runAsync(

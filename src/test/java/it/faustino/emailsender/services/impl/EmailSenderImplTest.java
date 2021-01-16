@@ -6,6 +6,7 @@ import com.icegreen.greenmail.util.GreenMailUtil;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import it.faustino.emailsender.MailIntegrationTestConfiguration;
 import it.faustino.emailsender.models.EmailBuilder;
+import it.faustino.emailsender.models.MailHeader;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,10 +48,9 @@ class EmailSenderImplTest {
 
     @Test
     void shouldSend_simpleMail() throws ExecutionException, InterruptedException {
+        var mailHeader = MailHeader.createMailHeader("me@localhost.com", "to@localhost.com", "Test Email");
         var toSend = EmailBuilder.builder()
-                .to("to@localhost.com")
-                .sender("me@localhost.com")
-                .subject("Test Email")
+                .mailHeader(mailHeader)
                 .body("some text from test!")
                 .created(LocalDateTime.now())
                 .build();
@@ -66,10 +66,10 @@ class EmailSenderImplTest {
 
     @Test
     void shouldSend_ExpectedMail() throws ExecutionException, InterruptedException {
+        var mailHeader = MailHeader.createMailHeader("me@localhost.com", "to@localhost.com", "Test Email");
+
         var toSend = EmailBuilder.builder()
-                .to("to@localhost.com")
-                .sender("me@localhost.com")
-                .subject("Test Email")
+                .mailHeader(mailHeader)
                 .body("some text from test!")
                 .created(LocalDateTime.now())
                 .build();
@@ -86,10 +86,10 @@ class EmailSenderImplTest {
 
     @Test
     void shouldGetError_simpleMail() throws ExecutionException, InterruptedException {
+        var mailHeader = MailHeader.createMailHeader("me@localhost.com", "to@localhost.com", "Test Email");
+
         var toSend = EmailBuilder.builder()
-                .to("to@localhost.com")
-                .sender("me@localhost.com")
-                .subject("Test Email")
+                .mailHeader(mailHeader)
                 .body("some text from test!")
                 .created(LocalDateTime.now())
                 .build();

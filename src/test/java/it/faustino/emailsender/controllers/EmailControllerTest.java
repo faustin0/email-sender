@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.faustino.emailsender.dtos.EmailDTO;
 import it.faustino.emailsender.models.EmailBuilder;
 import it.faustino.emailsender.models.EmailEntity;
+import it.faustino.emailsender.models.MailHeader;
 import it.faustino.emailsender.services.EmailPersistence;
 import it.faustino.emailsender.services.EmailSender;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,15 +51,15 @@ class EmailControllerTest {
     @BeforeEach
     void setUp() {
         sampleMail = new EmailDTO();
-        sampleMail.setFrom("from-field");
-        sampleMail.setTo("to-field");
+        sampleMail.setFrom("from@field.com");
+        sampleMail.setTo("to@field.com");
         sampleMail.setBody("body-field");
         sampleMail.setSubject("subject-field");
 
+        var mailHeader = MailHeader.createMailHeader("b@a.com", "a@b.com", "subjet");
+
         email = EmailBuilder.builder()
-                .to("a@b.com")
-                .sender("b@a.com")
-                .subject("subjet")
+                .mailHeader(mailHeader)
                 .body("text")
                 .created(LocalDateTime.now())
                 .build();
@@ -70,9 +71,8 @@ class EmailControllerTest {
     void shouldRespond_withSuccess_whenEmailSent() throws Exception {
         String jsonContent = objectMapper.writeValueAsString(sampleMail);
 
-        doReturn(CompletableFuture.completedFuture(1L))
-                .when(emailPersistence)
-                .persistEmail(any(EmailEntity.class));
+        when(emailPersistence.persistEmail(any(EmailEntity.class)))
+                .thenReturn(CompletableFuture.completedFuture(1L));
 
         doReturn(CompletableFuture.allOf())
                 .when(emailSender)

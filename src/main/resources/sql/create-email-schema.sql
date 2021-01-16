@@ -12,8 +12,8 @@ DROP TABLE IF EXISTS "emails";
 CREATE TABLE "emails"
 (
     id serial AUTO_INCREMENT NOT NULL,
-    sender character varying  NOT NULL,
-    to character varying NOT NULL,
+    from_address character varying  NOT NULL,
+    to_address character varying NOT NULL,
     subject character varying NOT NULL,
     body character varying,
     created datetime NOT NULL

@@ -2,6 +2,7 @@ package it.faustino.emailsender.repositories;
 
 import it.faustino.emailsender.models.EmailBuilder;
 import it.faustino.emailsender.models.EmailEntity;
+import it.faustino.emailsender.models.MailHeader;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,12 +44,12 @@ class EmailRepositoryTest {
     @Test
     @Order(2)
     void shouldInsert_and_getEmail() {
-        EmailEntity toSave = EmailBuilder.builder()
+        var mailHeader = MailHeader.createMailHeader("a@b.com", "b@a.com", "an email");
+
+        var toSave = EmailBuilder.builder()
+                .mailHeader(mailHeader)
                 .body("a text")
                 .created(LocalDateTime.now())
-                .sender("a@b.com")
-                .subject("an email")
-                .to("b@a.com")
                 .build();
 
         EmailEntity saved = sut.save(toSave);
@@ -69,7 +70,8 @@ class EmailRepositoryTest {
         Iterable<EmailEntity> all = sut.findAll();
 
         assertThat(all)
-                .extracting(EmailEntity::getTo)
+                .extracting(EmailEntity::getToEmailAddress)
+                .extracting(emailAddress -> emailAddress.getAddress())
                 .contains("b@a.com");
     }
 

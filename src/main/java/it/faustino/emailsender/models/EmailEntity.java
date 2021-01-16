@@ -4,6 +4,7 @@ import org.immutables.builder.Builder;
 import org.immutables.value.Value;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Immutable;
+import org.springframework.data.relational.core.mapping.Embedded;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.lang.Nullable;
 
@@ -11,24 +12,22 @@ import java.time.LocalDateTime;
 import java.util.OptionalLong;
 
 @Table("emails")
-@Immutable
 @Value.Style(newBuilder = "builder")
+@Immutable
 public class EmailEntity {
     @Id
     @Nullable
     private final Long id;
-    private final String sender;
-    private final String to;
     private final String body;
-    private final String subject;
     private final LocalDateTime created;
 
-    private EmailEntity(Long id, String sender, String to, String body, String subject, LocalDateTime created) {
+    @Embedded.Empty
+    private final MailHeader mailHeader;
+
+    private EmailEntity(Long id, String body, LocalDateTime created, MailHeader mailHeader) {
         this.id = id;
-        this.sender = sender;
-        this.to = to;
+        this.mailHeader = mailHeader;
         this.body = body;
-        this.subject = subject;
         this.created = created;
     }
 
@@ -38,12 +37,12 @@ public class EmailEntity {
                 : OptionalLong.empty();
     }
 
-    public String getSender() {
-        return sender;
+    public EmailAddress getFromEmailAddress() {
+        return mailHeader.getFrom();
     }
 
-    public String getTo() {
-        return to;
+    public EmailAddress getToEmailAddress() {
+        return mailHeader.getTo();
     }
 
     public String getBody() {
@@ -51,7 +50,7 @@ public class EmailEntity {
     }
 
     public String getSubject() {
-        return subject;
+        return mailHeader.getSubject();
     }
 
     public LocalDateTime getCreated() {
@@ -60,30 +59,27 @@ public class EmailEntity {
 
 
     public EmailEntity withId(Long id) {
-        return new EmailEntity(id, sender, to, body, subject, created);
+        return new EmailEntity(id, body, created, mailHeader);
     }
 
     @Builder.Factory
     public static EmailEntity email(
             @Nullable Long id,
-            String sender,
-            String to,
             String body,
-            String subject,
-            LocalDateTime created
+            LocalDateTime created,
+            MailHeader mailHeader
     ) {
-        return new EmailEntity(id, sender, to, body, subject, created);
+        return new EmailEntity(id, body, created, mailHeader);
     }
 
     @Override
     public String toString() {
         return "EmailEntity{" +
                 "id=" + id +
-                ", sender='" + sender + '\'' +
-                ", to='" + to + '\'' +
                 ", body='" + body + '\'' +
-                ", subject='" + subject + '\'' +
                 ", created=" + created +
+                ", mailHeader=" + mailHeader +
                 '}';
     }
 }
+

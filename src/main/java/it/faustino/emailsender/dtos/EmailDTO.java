@@ -1,5 +1,6 @@
 package it.faustino.emailsender.dtos;
 
+import it.faustino.emailsender.models.EmailEntity;
 import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotBlank;
@@ -69,5 +70,17 @@ public class EmailDTO {
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    public static EmailDTO fromEmail(EmailEntity email) {
+        EmailDTO emailDTO = new EmailDTO();
+        email.getId().ifPresent(
+                emailDTO::setID
+        );
+        emailDTO.setFrom(email.getFromEmailAddress().getAddress());
+        emailDTO.setTo(email.getToEmailAddress().getAddress());
+        emailDTO.setBody(email.getBody());
+        emailDTO.setSubject(email.getSubject());
+        return emailDTO;
     }
 }

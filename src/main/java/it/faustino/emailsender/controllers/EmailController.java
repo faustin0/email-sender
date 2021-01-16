@@ -3,6 +3,7 @@ package it.faustino.emailsender.controllers;
 import it.faustino.emailsender.dtos.EmailDTO;
 import it.faustino.emailsender.models.EmailBuilder;
 import it.faustino.emailsender.models.EmailEntity;
+import it.faustino.emailsender.models.MailHeader;
 import it.faustino.emailsender.services.EmailPersistence;
 import it.faustino.emailsender.services.EmailSender;
 import org.slf4j.Logger;
@@ -60,7 +61,7 @@ public class EmailController {
     public CompletableFuture<ResponseEntity<EmailDTO>> getMail(@PathVariable("id") long mailId) {
         return emailPersistence
                 .getEmail(mailId)
-                .thenApply(emailEntity -> emailEntity.map(this::emailToEmailDTO))
+                .thenApply(emailEntity -> emailEntity.map(EmailDTO::fromEmail))
                 .thenApply(ResponseEntity::of);
     }
 
@@ -74,29 +75,20 @@ public class EmailController {
 
     private EmailEntity emailDTOtoEmail(EmailDTO emailDTO) {
         return EmailBuilder.builder()
-                .sender(emailDTO.getFrom().trim())
-                .to(emailDTO.getTo().trim())
+                .mailHeader(MailHeader.createMailHeader(
+                        emailDTO.getFrom(),
+                        emailDTO.getTo(),
+                        emailDTO.getSubject()
+                ))
                 .body(emailDTO.getBody().trim())
-                .subject(emailDTO.getSubject().trim())
                 .created(LocalDateTime.now())
                 .build();
     }
 
-    private EmailDTO emailToEmailDTO(EmailEntity email) {
-        EmailDTO emailDTO = new EmailDTO();
-        email.getId().ifPresent(
-                emailDTO::setID
-        );
-        emailDTO.setFrom(email.getSender());
-        emailDTO.setTo(email.getTo());
-        emailDTO.setBody(email.getBody());
-        emailDTO.setSubject(email.getSubject());
-        return emailDTO;
-    }
 
     private List<EmailDTO> toEmailDTOS(List<EmailEntity> emails) {
         return emails.stream()
-                .map(this::emailToEmailDTO)
+                .map(EmailDTO::fromEmail)
                 .collect(Collectors.toUnmodifiableList());
     }
 }
